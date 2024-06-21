@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Rock, Paper, Scissors Game</h1>
+        <div id="choices">
+            <button id="rock">Rock</button>
+            <button id="paper">Paper</button>
+            <button id="scissors">Scissors</button>
+        </div>
+        <div id="result"></div>
+        <div id="score">
+            <p>Your Score: <span id="user-score">0</span></p>
+            <p>Computer Score: <span id="computer-score">0</span></p>
+        </div>
+        <button id="play-again">Play Again</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var userScore = 0;
+            var computerScore = 0;
+
+            function playGame(userChoice) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/play',
+                    contentType: 'application/json',
+                    data: JSON.stringify({'choice': userChoice}),
+                    success: function(response) {
+                        var userChoice = response.user_choice;
+                        var computerChoice = response.computer_choice;
+                        var result = response.result;
+
+                        $('#result').html(`<p>Your choice: ${userChoice}</p><p>Computer's choice: ${computerChoice}</p><p>${result.toUpperCase()}</p>`);
+
+                        if (result === 'win') {
+                            userScore++;
+                        } else if (result === 'lose') {
+                            computerScore++;
+                        }
+
+                        $('#user-score').text(userScore);
+                        $('#computer-score').text(computerScore);
+                    }
+                });
+            }
+
+            $('#rock').click(function() {
+                playGame('rock');
+            });
+
+            $('#paper').click(function() {
+                playGame('paper');
+            });
+
+            $('#scissors').click(function() {
+                playGame('scissors');
+            });
+
+            $('#play-again').click(function() {
+                $('#result').empty();
+            });
+        });
+    </script>
+</body>
+</html>
